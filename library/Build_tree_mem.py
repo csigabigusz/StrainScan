@@ -15,6 +15,7 @@ import psutil
 
 # hierarchical clustering
 def hierarchy(fna_mapping, dist):
+    print('Start hierarchy function')
     pending = list(fna_mapping.keys())
     node_id = max(pending) + 1
     mapping = bidict.bidict()
@@ -88,10 +89,12 @@ def hierarchy(fna_mapping, dist):
         if(i in leaves):
             depths_mapping[depths[i]].add(i)
 
+    print('End hierarchy function')
     return cls_dist_recls, mapping_recls, tree, depths, depths_mapping
 
 
 def extract_kmers(fna_i, fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, identifier):
+    print('Start extract_kmers function' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
     kmer_sta = defaultdict(int)
     pattern = re.compile("^[ATCG]+$")
     for j in fna_i:
@@ -138,10 +141,12 @@ def extract_kmers(fna_i, fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec,
             Lv[identifier].add(x)
         else:
             spec[identifier].add(x)
+    print('End extract kmers function')        
     return kmer_index
 
 
 def get_leaf_union(depth, higher_union, depths_mapping, Lv, spec, leaf):
+    print('start get_leaf_union ' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
     union = depths_mapping[depth]-set([leaf])
     if(len(higher_union) == 0):
         res = set([])
@@ -248,6 +253,7 @@ def delete(Lv, spec, del_label):
 
 # build tree-based indexing structure
 def build_tree(arg):
+    print('Start build_tree function' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
     # load parameters
     dist_matrix_file = arg[0]
     cls_file = arg[1]
@@ -408,6 +414,7 @@ def build_tree(arg):
     leaves_check = []
     check_waitlist = reversed(leaves)
     while(True):
+        print('build_tree: while loop checking leaves' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
         if(recls_label):
             cls_dist, mapping, tree, depths, depths_mapping = hierarchy(fna_mapping, dist)
             leaves = tree.leaves()
@@ -443,6 +450,7 @@ def build_tree(arg):
         # re-clustering
         check_waitlist = []
         while(recls_label == 1):
+            print('build_tree: inner while loop')
             cluster_id = max(list(fna_mapping.keys())) + 1
             check_waitlist.append(cluster_id)
             leaf_a = leaves_check[0].identifier
