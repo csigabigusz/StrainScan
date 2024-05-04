@@ -599,7 +599,7 @@ def out_info_test(arg):
 	print(arg)
 
 def build_kmer_sets(d,out_dir,ksize,uknum,gkratio,mas,threads):
-	print(str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))+' - StrainScan::build_DB::Step2-begin: Now we will extract kmers from unique region found by sibeliaz',flush=True)
+	print(str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))+' - Build_kmer_sets_unique_region_lasso_test_allinone_sp.build_kmer_sets:Step2-begin: Now we will extract kmers from unique region found by sibeliaz',flush=True)
 	#import multiprocessing
 	ksize=int(ksize)
 	cb_dir=out_dir+'/Colinear_Block'

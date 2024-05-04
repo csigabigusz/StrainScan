@@ -141,7 +141,7 @@ def main():
 	shutil.rmtree(os.path.join(out_dir, 'Tree_database', 'test'))
 
 	# --------- Inside cluster strains kmer sets construction -------
-	logging.info('Inside cluster strains kmer sets construction')
+	logging.info('Inside cluster strains kmer sets construction'+u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
 	Build_kmer_sets_unique_region_lasso_test_allinone_sp.build_kmer_sets(dc95_l2,kmer_sets_l2, args.ksize, 
                                                                           args.uknum, args.gkratio, args.mas, args.threads)
 	print(str(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))) + ' - StrainScan::build_DB:: Build sparse matices done '+u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024) )

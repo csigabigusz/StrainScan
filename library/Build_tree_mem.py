@@ -11,6 +11,7 @@ import gzip
 import re
 import time
 import psutil
+import sys
 
 
 # hierarchical clustering
@@ -405,8 +406,8 @@ def build_tree(arg):
     leaves = tree.leaves()
     for i in leaves:
         kmer_index = extract_kmers(fna_mapping[i.identifier], fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, i.identifier)
-        print(f'{len(Lv)}/{len(leaves)} clusters finished.')
-
+        print(f'{len(Lv)}/{len(leaves)} clusters finished. Size of kmer_index_dict:', sys.getsizeof(kmer_index_dict))
+   
     # leaf nodes check
     recls_label = 0
 
@@ -433,6 +434,7 @@ def build_tree(arg):
             for i in fna_mapping:
                 if(i not in Lv):
                     kmer_index = extract_kmers(fna_mapping[i], fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, i)
+                    print('Size of kmer_index_dict:', sys.getsizeof(kmer_index_dict))
         higher_union = defaultdict(set)
         for i in check_waitlist:
             diff, diff_nodes = get_leaf_union(depths[i], higher_union, depths_mapping, Lv, spec, i)
@@ -513,6 +515,7 @@ def build_tree(arg):
 
     # save2file
     f = open(tree_dir+"/tree_structure.txt", "w")
+    print('start writing to tree_structure.txt' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
     os.system("mkdir "+tree_dir+"/kmers")
     os.system("mkdir "+tree_dir+"/overlapping_info")
     for nn in all_identifier:
@@ -532,8 +535,11 @@ def build_tree(arg):
             temp = fna_seq.inv[temp]
             f.write("%s"%temp)
         f.write("\n")
+        print('end writing to tree_structure.txt' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
+
     f.close()
     f = open(tree_dir+"/hclsMap_95_recls.txt", "w")
+    print('start writing to hclsMap_95_recls.txt' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
     for nn in leaves_identifier:
         i = id_mapping.inv[nn]
         f.write("%d\t%d\t"%(nn, len(fna_mapping[i])))
@@ -544,9 +550,11 @@ def build_tree(arg):
                 f.write("%s\n"%temp)
             else:
                 f.write("%s,"%temp)
+    print('end writing to hclsMap_95_recls.txt' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
     f.close()
 
     # build indexing structure
+    print('start building the indexing structure ')
     kmerlist = set([])  # all kmers used
     length = {}
     overload_label = 0
@@ -562,6 +570,7 @@ def build_tree(arg):
     for i in all_nodes[1:]:
         ancestor[i.identifier] = ancestor[tree.parent(i.identifier).identifier].copy()
         ancestor[i.identifier].add(i.identifier)
+    print('indexing 01' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
     for i in reversed(all_nodes):
         print('Node '+str(id_mapping[i.identifier]) + " k-mer building...")
         if(i in leaves):
@@ -576,9 +585,10 @@ def build_tree(arg):
             uniq_temp[child_b.identifier] = uniq_temp[child_b.identifier] - uniq_temp[i.identifier]
         descendant[i.identifier].add(i.identifier)
     all_nodes_id = set(id_mapping.keys())
+    print('indexing 02' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
     # remove overlapping
     for i in reversed(all_nodes):
-        print('Node '+str(id_mapping[i.identifier]) + " k-mer set building...")
+        print('Node '+str(id_mapping[i.identifier]) + " k-mer set building..." + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
         # no difference with sibling, subtree and ancestors
         if(i == all_nodes[0]):
             kmer_t = uniq_temp[i.identifier]
@@ -603,7 +613,7 @@ def build_tree(arg):
                 kmer_t = kmer_t - spec[k]
         if(len(kmer_t) < minsize and overload_label==0):
             rebuilt_nodes.append(i)
-            print("Node %d waiting for reconstruction..." % id_mapping[i.identifier])
+            print("Node %d waiting for reconstruction..." % id_mapping[i.identifier] + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
         else:
             if(len(kmer_t) > maxsize):
                 kmer_t = set(random.sample(kmer_t, maxsize))
@@ -624,7 +634,7 @@ def build_tree(arg):
     for i in leaves:
         del_label[i.identifier] = [0, 0]
     for i in rebuilt_nodes:
-        print('Node '+str(id_mapping[i.identifier]) + " k-mer set rebuilding...")
+        print('Node '+str(id_mapping[i.identifier]) + " k-mer set rebuilding..." + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
         kmer_t = get_intersect(intersection, descendant_leaves[i.identifier], Lv, del_label, i.identifier)
         diff = get_diff(higher_union, descendant_leaves, depths, all_nodes, i, Lv, spec, del_label)
         for j in diff:
@@ -716,6 +726,8 @@ def build_tree(arg):
         for j in d:
             f.write("%d "%kmer_mapping[j])
         f.close()
+    print('End of build_tree' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
+
 
 
 def cal_cls_dist(dist, fna_i, fna_j):
