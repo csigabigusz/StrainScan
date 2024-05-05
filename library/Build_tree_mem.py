@@ -96,6 +96,7 @@ def hierarchy(fna_mapping, dist):
 
 def extract_kmers(fna_i, fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, identifier):
     print('Start extract_kmers function' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
+    print('kmer_index_dict', len(kmer_index_dict), sys.getsizeof(kmer_index_dict))
     kmer_sta = defaultdict(int)
     pattern = re.compile("^[ATCG]+$")
     for j in fna_i:
@@ -142,6 +143,7 @@ def extract_kmers(fna_i, fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec,
             Lv[identifier].add(x)
         else:
             spec[identifier].add(x)
+    print('kmer_sta:', len(kmer_sta), sys.getsizeof(kmer_sta))        
     print('End extract kmers function')        
     return kmer_index
 
@@ -405,11 +407,7 @@ def build_tree(arg):
     spec = defaultdict(set)    # k-mers <= alpha
     leaves = tree.leaves()
     for i in leaves:
-        new_index = extract_kmers(fna_mapping[i.identifier], fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, i.identifier)
-        kmer_index=new_index
-        print('Size of kmer_index_dict:', sys.getsizeof(kmer_index_dict))
-        print('Size of Lv:', sys.getsizeof(Lv))
-        print('Size of spec:', sys.getsizeof(spec))
+        kmer_index = extract_kmers(fna_mapping[i.identifier], fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, i.identifier)
         print(f'{len(Lv)}/{len(leaves)} clusters finished.')
 
    
