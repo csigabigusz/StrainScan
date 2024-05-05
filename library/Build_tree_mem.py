@@ -405,11 +405,12 @@ def build_tree(arg):
     spec = defaultdict(set)    # k-mers <= alpha
     leaves = tree.leaves()
     for i in leaves:
-        kmer_index = extract_kmers(fna_mapping[i.identifier], fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, i.identifier)
-        print(f'{len(Lv)}/{len(leaves)} clusters finished.')
+        new_index = extract_kmers(fna_mapping[i.identifier], fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, i.identifier)
+        kmer_index=new_index
         print('Size of kmer_index_dict:', sys.getsizeof(kmer_index_dict))
         print('Size of Lv:', sys.getsizeof(Lv))
         print('Size of spec:', sys.getsizeof(spec))
+        print(f'{len(Lv)}/{len(leaves)} clusters finished.')
 
    
     # leaf nodes check
