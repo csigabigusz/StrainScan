@@ -96,7 +96,7 @@ def hierarchy(fna_mapping, dist):
 
 def extract_kmers(fna_i, fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, identifier):
     print('Start extract_kmers function' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
-    print('kmer_index_dict', len(kmer_index_dict), sys.getsizeof(kmer_index_dict))
+    print('kmer_index_dict', len(kmer_index_dict),  sys.getsizeof(pkl.dumps(kmer_index_dict)/ 1024 / 1024 / 1024))
     kmer_sta = defaultdict(int)
     pattern = re.compile("^[ATCG]+$")
     for j in fna_i:
@@ -143,7 +143,7 @@ def extract_kmers(fna_i, fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec,
             Lv[identifier].add(x)
         else:
             spec[identifier].add(x)
-    print('kmer_sta:', len(kmer_sta), sys.getsizeof(kmer_sta))        
+    print('kmer_sta:', len(kmer_sta),  sys.getsizeof(pkl.dumps(kmer_sta)/ 1024 / 1024 / 1024))        
     print('End extract kmers function')        
     return kmer_index
 
