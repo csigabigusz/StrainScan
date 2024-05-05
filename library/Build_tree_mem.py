@@ -143,7 +143,9 @@ def extract_kmers(fna_i, fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec,
             Lv[identifier].add(x)
         else:
             spec[identifier].add(x)
-    print('kmer_sta:', len(kmer_sta),  sys.getsizeof(pkl.dumps(kmer_sta)))        
+    
+    print('Lv:',  sys.getsizeof(pkl.dumps(Lv)))  
+    print('spec:',  sys.getsizeof(pkl.dumps(spec)))          
     print('End extract kmers function')        
     return kmer_index
 
