@@ -94,9 +94,11 @@ def hierarchy(fna_mapping, dist):
     return cls_dist_recls, mapping_recls, tree, depths, depths_mapping
 
 
-def extract_kmers(fna_i, fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, identifier):
+#def extract_kmers(fna_i, fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, identifier):
+def extract_kmers(fna_i, fna_path, ksize, kmer_index_dict, Lv, spec, alpha_ratio, identifier):
     print('Start extract_kmers function' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))
     print('kmer index:',kmer_index, 'length of kmer_index_dict:', len(kmer_index_dict))
+    kmer_index=len(kmer_index_dict)+1
     #print('kmer_index_dict', len(kmer_index_dict),  sys.getsizeof(pkl.dumps(kmer_index_dict)))
     kmer_sta = defaultdict(int)
     pattern = re.compile("^[ATCG]+$")
@@ -149,7 +151,7 @@ def extract_kmers(fna_i, fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec,
     #print('spec:',  sys.getsizeof(pkl.dumps(spec)))          
     #print('End extract kmers function')  
     print('End extract_kmers function' + u'- Current Memory Usage: %.4f GB' % (psutil.Process(os.getpid()).memory_info().rss / 1024 / 1024 / 1024))      
-    return kmer_index
+    #return kmer_index
 
 
 def get_leaf_union(depth, higher_union, depths_mapping, Lv, spec, leaf):
@@ -411,13 +413,14 @@ def build_tree(arg):
     spec = defaultdict(set)    # k-mers <= alpha
     leaves = tree.leaves()
     for i in leaves:
-        print('leaf size before extract_kmers function', sys.getsizeof(pkl.dumps(i)))
-        kmer_index = extract_kmers(fna_mapping[i.identifier], fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, i.identifier)
-        print('leaf size after extract_kmers function', sys.getsizeof(pkl.dumps(i)))
-        print('kmer_index', sys.getsizeof(kmer_index))
-        print('kmer_index_dict', len(kmer_index_dict),  sys.getsizeof(pkl.dumps(kmer_index_dict)))
-        print('Lv', sys.getsizeof(pkl.dumps(Lv)))
-        print('spec', sys.getsizeof(pkl.dumps(spec)))
+        #print('leaf size before extract_kmers function', sys.getsizeof(pkl.dumps(i)))
+        #kmer_index = extract_kmers(fna_mapping[i.identifier], fna_path, ksize, kmer_index_dict, kmer_index, Lv, spec, tree_dir, alpha_ratio, i.identifier)
+        extract_kmers(fna_mapping[i.identifier], fna_path, ksize, kmer_index_dict, Lv, spec, alpha_ratio, i.identifier)
+        #print('leaf size after extract_kmers function', sys.getsizeof(pkl.dumps(i)))
+        #print('kmer_index', sys.getsizeof(kmer_index))
+        #print('kmer_index_dict', len(kmer_index_dict),  sys.getsizeof(pkl.dumps(kmer_index_dict)))
+        #print('Lv', sys.getsizeof(pkl.dumps(Lv)))
+        #print('spec', sys.getsizeof(pkl.dumps(spec)))
         print(f'{len(Lv)}/{len(leaves)} clusters finished.')
 
    
